@@ -3,6 +3,7 @@ package com.acast.todolist.user;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Entity;
@@ -19,8 +20,9 @@ public class UserModel {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    private String name;
+    @Column(unique = true)
     private String username;
+    private String name;
     private String password;
 
     @CreationTimestamp
