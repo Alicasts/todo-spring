@@ -1,11 +1,13 @@
 package com.acast.todolist.task;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +29,8 @@ public class TaskController {
 
         var taskStartDate = taskModel.getStartAt();
         var taskEndDate = taskModel.getEndAt();
-        if (currentDate.isAfter(taskStartDate) || currentDate.isAfter(taskEndDate) && taskModel.getStartAt().isAfter(taskModel.getEndAt()) ) {
+        var isDatesValid = validateDates(taskStartDate, taskEndDate);
+        if (!isDatesValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad date");
         }
         var task = this.taskRepository.save(taskModel);
@@ -45,6 +48,13 @@ public class TaskController {
         }
 
         return true;
+    }
+
+    @GetMapping("/")
+    public List<TaskModel> list(HttpServletRequest request) {
+        var targetUserId = request.getAttribute("idUser");
+        var targetUserTasksList = this.taskRepository.findByUserId((UUID)targetUserId);
+        return targetUserTasksList;
     }
     
 }
