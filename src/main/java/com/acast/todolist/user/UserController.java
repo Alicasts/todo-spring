@@ -28,7 +28,6 @@ public class UserController {
         userModel.setPassword(hashedPassword);
 
         var createdUser = this.userRepository.save(userModel);
-        System.out.println(userModel.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
     
