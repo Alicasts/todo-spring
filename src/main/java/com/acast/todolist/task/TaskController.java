@@ -62,12 +62,18 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public TaskModel update(@RequestBody TaskModel taskmodel, @PathVariable UUID id, HttpServletRequest request) {
-
+    public ResponseEntity update(@RequestBody TaskModel taskmodel, @PathVariable UUID id, HttpServletRequest request) {
         var targetTask = this.taskRepository.findById(id).orElse(null);
-        Utils.copyNonNullProperties(taskmodel, targetTask);
+        if (targetTask == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad task ID");
 
-        return this.taskRepository.save(targetTask);
+
+        var userId = request.getAttribute("userId");
+        if(!targetTask.getUserId().equals(userId)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad user");
+
+        Utils.copyNonNullProperties(taskmodel, targetTask);
+        var updatedTask = this.taskRepository.save(targetTask);
+
+        return ResponseEntity.ok().body(updatedTask);
     }
     
 }
